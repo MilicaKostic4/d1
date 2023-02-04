@@ -27,7 +27,7 @@
   <h1><b>Dom zdravlja Grande</b></h1>
   <p id="DatumVreme"></p>
  <br>
-  <a href="">Registracija</a>
+  <a href="prijava.php">Prijavi se</a>
   <br><br>
   <button onclick="window.print()">Print</button>
 </div>

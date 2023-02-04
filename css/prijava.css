@@ -1,0 +1,126 @@
+* {
+    margin: 0;
+    padding: 0;
+    text-decoration: none;
+    list-style: none;
+    box-sizing: border-box;
+}
+  
+body {
+    font-family: sans-serif;
+    background: #a6a6a6;
+}
+  
+nav {
+    background: #e0e0d1;
+    height: 100px;
+    width: 100%;
+    border-bottom: 3px solid grey;
+}
+  
+label.logo {
+    padding: 0 80px;
+}
+  
+label.logo img {
+    height: 100px;
+}
+  
+nav ul {
+    float: right;
+    margin-right: 20px;
+}
+  
+nav ul li {
+    display: inline-block;
+    line-height: 80px;
+    margin: 9px 5px;
+}
+  
+nav ul li a {
+    color: black;
+    font-size: 15px;
+    padding: 7px 17px;
+    border-radius: 3px;
+    text-transform: uppercase;
+    font-family: "Times New Roman", Times, serif;
+}
+  
+a .active,
+a:hover {
+    background: rgb(99, 192, 199);
+    transition: 0.5s;
+}
+  
+.checkbtn {
+    font-size: 30px;
+    color: black;
+    float: right;
+    line-height: 80px;
+    margin-right: 40px;
+    cursor: pointer;
+    display: none;
+}
+  
+#check {
+    display: none;
+}
+
+/*forma*/ 
+.container{
+    background-color: #a6a6a6;
+    display:flex;
+    justify-content: center;
+    margin-top: 150px;
+    margin-bottom: 150px;
+    align-items: center;
+}
+.login-form{
+    background-color: rgb(255, 255, 255, 0.7);
+    padding: 7px;
+    width:600px;
+}
+label{
+    flex-basis: 150px;
+    margin-top: 10px;
+    font-size: 20px;  
+}
+.login-form h1{
+    margin-top:5px;
+    margin-bottom: 15px;
+    color:rgb(99, 192, 199);
+}
+.input{
+    display:flex;
+    flex-direction: row;
+    margin-bottom: 10px;  
+}
+input[type="text"],
+  [type="password"]{
+    padding:8px;
+    font-size: 18px;
+}  
+#submit{
+    width:100%;
+    font-size: 20px;
+    padding: 9px;
+    background-color: rgb(99, 192, 199);
+    color:white;
+    border:none;
+    margin:20px 0;
+    margin-bottom: 10px;    
+}
+
+button:hover{ 
+    cursor:pointer;
+    background-color: rgb(41, 196, 207);
+}
+  
+@media all and (max-width:480px){
+    .input{
+        flex-direction: column;
+    }
+    label{
+        flex-basis:0;
+    }
+}
