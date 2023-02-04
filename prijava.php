@@ -1,3 +1,39 @@
+<?php
+
+require "connect.php";
+require "model/korisnik.php";
+
+session_start();
+
+if(isset($_POST['username']) && isset($_POST['password'])){
+    $uname = $_POST['username'];
+    $upass = $_POST['password'];
+
+    $korisnik = new Korisnik(1, $uname, $upass);
+    $result = Korisnik::loginUser($korisnik, $connection);
+
+    if($result->num_rows==1){
+        echo `
+        <script>
+            console.log("Uspesna prijava!");
+        </script>        
+        `;
+
+        $_SESSION['user_id'] = $korisnik->id;
+        header('Location: mojNalog.php');
+        exit();
+    }
+    else{
+        echo `
+        <script>
+            console.log("Neuspesna prijava!");
+        </script>        
+        `;
+    }
+}
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -18,7 +54,7 @@
         <label class="logo"><img src="img/logo-modified.png"></label>
         <ul>
             <li><a class="active" href="index.php">Početna</a></li>
-            <li><a href="">Moj nalog</a></li>
+            <li><a href="mojNalog.php">Moj nalog</a></li>
             <li><a href="sluzbe.html">Službe</a></li>
             <li><a href="kontakt.html">Kontakt</a></li>
         </ul>
@@ -28,12 +64,12 @@
         <form name="form"  method="POST" action="#"  class="login-form" >
             <h1>Prijavite se</h1>
             <div class="input">
-                <label for="" class="formLabel">Korisnicko ime:</label>
-                <input type="text" class="formInput" size="30" minlength="5" placeholder="Korisnicko ime" name="korisnickoIme" required >
+                <label for="username" class="formLabel">Korisnicko ime:</label>
+                <input type="text" class="formInput" size="30" minlength="5" placeholder="Korisnicko ime" name="username" required >
             </div>
             <div class="input">
-                <label for=""class="formLabel">Lozinka:</label>
-                <input type="password" class="formInput" size="30" minlength="8" placeholder="Lozinka" name="password" required >
+                <label for="password" class="formLabel">Lozinka:</label>
+                <input type="password" class="formInput" size="30" minlength="5" placeholder="Lozinka" name="password" required >
             </div>
 
             <button id="submit" type="submit">Prijavi se</button>
@@ -42,7 +78,7 @@
     </div>
 
 
-   <script src="js/prijava.js"></script>  
+   <!--<script src="js/prijava.js"></script> -->
           
 </body>
 </html>
