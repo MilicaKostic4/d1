@@ -8,10 +8,10 @@
 
 body{
     font-family: sans-serif;
+    background: #e0e0d1;
 }
 
 nav{
-    background: #e0e0d1;;
     height: 100px;
     width: 100%;
     border-bottom: 3px solid grey;
@@ -32,7 +32,7 @@ nav ul{
 
 nav ul li{
     display: inline-block;
-    line-height: 80px;
+    line-height: 70px;
     margin: 9px 5px;
 }
 
@@ -78,10 +78,6 @@ a .active, a:hover{
     text-shadow: 0 3px 5px rgb(27, 27, 27);
 } 
 
-.wrapper{
-    background-color: #e0e0d1;
-}
-
 .wrapper p{
     text-align: center;
     font-size: 15px;
@@ -111,6 +107,16 @@ a .active, a:hover{
 img:hover{
    opacity: .5;
    transition: .9s;
+}
+
+.welcome{
+    height: 100px;
+    color: #1a1a18;
+    text-shadow: 0 1px 3px rgb(61, 61, 61);
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    margin-left: 30px;
 }
 
 @media (max-width: 952px){

@@ -3,6 +3,11 @@
 require "connect.php";
 require "model/korisnik.php";
 
+
+if(isset($_COOKIE['Cookie'])){
+    header('Location: mojNalog.php');
+}
+
 session_start();
 
 if(isset($_POST['username']) && isset($_POST['password'])){
@@ -20,6 +25,7 @@ if(isset($_POST['username']) && isset($_POST['password'])){
         `;
 
         $_SESSION['user_id'] = $korisnik->id;
+        setcookie("Cookie", $uname, time()+3600);
         header('Location: mojNalog.php');
         exit();
     }

@@ -17,7 +17,7 @@
         <label class="logo"><img src="img/logo-modified.png"></label>
         <ul>
             <li><a class="active" href="index.php">Početna</a></li>
-            <li><a href="">Moj nalog</a></li>
+            <li><a href="mojNalog.php">Moj nalog</a></li>
             <li><a href="sluzbe.html">Službe</a></li>
             <li><a href="kontakt.html">Kontakt</a></li>
         </ul>
