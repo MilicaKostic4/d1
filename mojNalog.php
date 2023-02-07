@@ -1,3 +1,7 @@
+<?php
+require "connect.php";
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -47,7 +51,6 @@
     <table class="table">
         <thead class="thead-dark">
             <tr>
-                <th scope="col">#</th>
                 <th scope="col">Datum</th>
                 <th scope="col">Sluzba</th>
                 <th scope="col">Lekar</th>
@@ -55,11 +58,27 @@
             </tr>
         </thead>
         <tbody id="termini">
+            <?php
+            $termini = $connection->query("SELECT * FROM termin");
+            while ($termin = $termini->fetch_array()) :
+            ?>
+                <tr>
+                    <td><?php echo $termin["datum"] ?></td>
+                    <td><?php echo $termin["sluzba"] ?></td>
+                    <td><?php echo $termin["lekar"] ?></td>
+                    <td>
+                        <button id="dugmeObrisi" name="dugmeObrisi" class="btn btn-danger" onclick="obrisiTermin(<?php echo $termin["id"] ?>)" data-id1="<?php echo $termin["id"] ?>">Obrisi</button>
+                        <button type="button" class="btn btn-warning" data-id2="<?php echo $termin["id"] ?>">Izmeni</button>
+                    </td>
+                </tr>
+            <?php
+            endwhile;
+            ?>
         </tbody>
     </table>
 
-    <!-- Button trigger modal -->
-    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalDodaj" data-whatever="@dodaj">
+    <!-- Button trigger modal dodaj termin -->
+    <button type="button" class="btn btn-info" data-toggle="modal" data-target="#modalDodaj" data-whatever="@dodaj">
         Dodaj termin
     </button>
 
@@ -74,15 +93,16 @@
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <div class="modal-body">
-                    <form method="post">
+
+                <form method="post" id="formaDodaj">
+                    <div class="modal-body">
                         <div class="form-group">
                             <label for="datepicker">Datum</label>
-                            <input type="text" class="form-control" id="datepicker" placeholder="Izaberite datum" required>
+                            <input type="text" name="datum" class="form-control" id="datepicker" placeholder="Izaberite datum" required>
                         </div>
                         <div class="form-group">
                             <label for="sluzba">Sluzba</label>
-                            <select type="text" class="form-control" id="sluzba" value='' required>
+                            <select type="text" name="sluzba" class="form-control" id="sluzba" value='' required>
                                 <?php
                                 include "connect.php";
                                 $vratiSluzbe = "SELECT * FROM sluzba";
@@ -94,17 +114,18 @@
                         </div>
                         <div class="form-group">
                             <label for="lekar">Lekar</label>
-                            <select type="text" class="form-control" id="lekar" value='' required>
+                            <select type="text" name="lekar" class="form-control" id="lekar" value='' required>
                                 <option value="none" class="dropdown-item disabled">Izaberite sluzbu prvo</option>
                             </select>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Zatvori</button>
+                            <button type="submit" id="dugmeDodaj" name="dugmeDodaj" class="btn btn-info">Sacuvaj</button>
+                        </div>
+                </form>
 
-                    </form>
 
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Zatvori</button>
-                    <button type="button" class="btn btn-primary">Sacuvaj</button>
-                </div>
+
             </div>
         </div>
     </div>
@@ -116,10 +137,12 @@
 
     <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
     <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
-    
+
     <script>
         $(function() {
-            $("#datepicker").datepicker();
+            $("#datepicker").datepicker({
+                dateFormat: 'dd-mm-yy'
+            });
         });
 
         $(document).ready(function() {
@@ -138,7 +161,71 @@
                     });
                 }
             });
+
+            //dodavanje
+            $('#formaDodaj').submit(function() {
+                event.preventDefault();
+                console.log("Dodavanje");
+                const $form = $(this);
+                const $input = $form.find('input, select, button, textarea');
+                const serijalizacija = $form.serialize();
+
+                console.log(serijalizacija);
+                $input.prop('disabled', true);
+
+                request = $.ajax({
+                    url: 'handler/add.php',
+                    type: 'POST',
+                    data: serijalizacija
+                });
+
+                request.done(function(response, textStatus, jqXHR) {
+                    if (response == "Uspesno") {
+                        alert("Uspesno ste dodali termin");
+                        location.reload(true);
+                        console.log('Dodat termin');
+                    } else {
+                        console.log("Termin nije dodat " + response);
+                        alert("Neuspesno dodavanje termina");
+                    }
+                });
+
+                request.fail(function(jqXHR, textStatus, errorThrown) {
+                    console.error('Desila se greska: ' + textStatus, errorThrown);
+                });
+            });
+
         });
+    </script>
+
+    <script>
+        //brisanje
+        function obrisiTermin(deleteid) {
+            console.log('ID je: ' + deleteid);
+            request = $.ajax({
+                url: 'handler/delete.php',
+                type: 'POST',
+                data: {
+                    id: deleteid
+                }
+            });
+
+            request.done(function(response, textStatus, jqXHR) {
+                if (response == "Uspesno") {
+                    $(this).closest('tr').remove();
+                    alert('Uspesno ste obrisali termin');
+                    location.reload(true);
+                    console.log('Obrisan termin');
+                } else {
+                    console.log("Termin nije izbrisan " + response);
+                    alert("Neuspesno brisanje termina");
+                }
+            });
+            request.fail(function(jqXHR, textStatus, errorThrown) {
+                console.error('Desila se greska: ' + textStatus, errorThrown);
+            });
+
+        };
     </script>
 
 </body>
