@@ -1,5 +1,7 @@
 <?php
 
+require "../connect.php";
+
 class Termin{
 
     public $idTermina;
@@ -20,9 +22,15 @@ class Termin{
     }
 
     public function izmeniTermin($connection){
-        return $connection->query("UPDATE termin SET datum='$this->datum',lekar='$this->imeLekara',sluzba='$this->nazivSluzbe')");
+        return $connection->query("UPDATE termin SET datum='$this->datum',lekar='$this->imeLekara',sluzba='$this->nazivSluzbe' WHERE id='$this->idTermina'");
     }
 
+}
+
+if(isset($_POST['name'])){
+    $name = $_POST['name'];
+    $idS = current($connection->query("SELECT id FROM sluzba WHERE naziv='".$name."'")->fetch_assoc());
+    echo ($idS);
 }
 
 ?>

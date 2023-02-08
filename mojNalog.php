@@ -63,12 +63,12 @@ require "connect.php";
             while ($termin = $termini->fetch_array()) :
             ?>
                 <tr>
-                    <td><?php echo $termin["datum"] ?></td>
-                    <td><?php echo $termin["sluzba"] ?></td>
-                    <td><?php echo $termin["lekar"] ?></td>
+                    <td data-target="datum"><?php echo $termin["datum"] ?></td>
+                    <td data-target="sluzba"><?php echo $termin["sluzba"] ?></td>
+                    <td data-target="lekar"><?php echo $termin["lekar"] ?></td>
                     <td>
                         <button id="dugmeObrisi" name="dugmeObrisi" class="btn btn-danger" onclick="obrisiTermin(<?php echo $termin["id"] ?>)" data-id1="<?php echo $termin["id"] ?>">Obrisi</button>
-                        <button type="button" class="btn btn-warning" data-id2="<?php echo $termin["id"] ?>">Izmeni</button>
+                        <button id="izmena" type="button" class="btn btn-success" data-toggle="modal" data-target="#modal1" data-id2="<?php echo $termin["id"] ?>">Izmeni</button>
                     </td>
                 </tr>
             <?php
@@ -76,6 +76,52 @@ require "connect.php";
             ?>
         </tbody>
     </table>
+
+
+    <!-- Modal izmeni termin -->
+    <div class="modal hide fade" id="modal1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="myModalLabelIzmeni">Izmeni termin</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                </div>
+                <form method="post" id="formaIzmeni">
+                    <div class="modal-body">
+                        <div style="display: none;" class="form-group">
+                            <label for="idTermina">IdTermina</label>
+                            <input id="idTermina" type="text" name="idTermina" class="form-control" />
+                        </div>
+                        <div class="form-group">
+                            <label for="datepicker2">Datum</label>
+                            <input type="text" name="datum" class="form-control datepicker" id="datepicker2" placeholder="" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="sluzbaIzmena">Sluzba</label>
+                            <select type="text" name="sluzba" class="form-control sluzba" id="sluzbaIzmena" value='' required>
+                                <?php
+                                $sluzbe = $connection->query("SELECT * FROM sluzba");
+                                while ($sluzba = $sluzbe->fetch_array()) :
+                                    echo '<option value="' . $sluzba['id'] . '" name="' . $sluzba['naziv'] . '">' . $sluzba['naziv'] . '</option>';
+                                endwhile;
+                                ?>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="lekarIzmena">Lekar</label>
+                            <select type="text" name="lekar" class="form-control lekar" id="lekarIzmena" value='' required>
+                                <option value="none" class="dropdown-item disabled">Izaberite sluzbu prvo</option>
+                            </select>
+                        </div>
+                    </div>
+                </form>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Zatvori</button>
+                    <button id="sacuvajIzmenu" type="submit" id="dugmeIzmeni" name="dugmeIzmeni" class="btn btn-info">Sacuvaj</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Button trigger modal dodaj termin -->
     <button type="button" class="btn btn-info" data-toggle="modal" data-target="#modalDodaj" data-whatever="@dodaj">
@@ -98,23 +144,23 @@ require "connect.php";
                     <div class="modal-body">
                         <div class="form-group">
                             <label for="datepicker">Datum</label>
-                            <input type="text" name="datum" class="form-control" id="datepicker" placeholder="Izaberite datum" required>
+                            <input type="text" name="datum" class="form-control datepicker" id="datepicker" placeholder="Izaberite datum" required>
                         </div>
                         <div class="form-group">
                             <label for="sluzba">Sluzba</label>
-                            <select type="text" name="sluzba" class="form-control" id="sluzba" value='' required>
+                            <select type="text" name="sluzba" class="form-control sluzba" id="sluzba" value='' required>
                                 <?php
-                                include "connect.php";
                                 $vratiSluzbe = "SELECT * FROM sluzba";
                                 $sluzbe = $connection->query($vratiSluzbe);
                                 while ($sluzba = $sluzbe->fetch_array()) :
                                     echo '<option value="' . $sluzba['id'] . '">' . $sluzba['naziv'] . '</option>';
-                                endwhile; ?>
+                                endwhile;
+                                ?>
                             </select>
                         </div>
                         <div class="form-group">
                             <label for="lekar">Lekar</label>
-                            <select type="text" name="lekar" class="form-control" id="lekar" value='' required>
+                            <select type="text" name="lekar" class="form-control lekar" id="lekar" value='' required>
                                 <option value="none" class="dropdown-item disabled">Izaberite sluzbu prvo</option>
                             </select>
                         </div>
@@ -140,7 +186,7 @@ require "connect.php";
 
     <script>
         $(function() {
-            $("#datepicker").datepicker({
+            $(".datepicker").datepicker({
                 dateFormat: 'dd-mm-yy'
             });
         });
@@ -161,6 +207,83 @@ require "connect.php";
                     });
                 }
             });
+
+            $('#sluzbaIzmena').on("click", function() {
+                var sluzbaID = $(this).val;
+                if (sluzbaID) {
+                    $.ajax({
+                        url: 'lekarFilter.php',
+                        type: 'POST',
+                        data: {
+                            id: $('#sluzbaIzmena').val(),
+                        },
+                        success: function(html) {
+                            $('#lekarIzmena').html(html);
+                        }
+                    });
+                }
+            });
+
+
+            $('.btn-success').click(function() {
+                const idTerm = $(this).attr('data-id2');
+                var datum = $(this).closest('tr').children('td[data-target=datum]').text();
+                var sluzbaNaziv = $(this).closest('tr').children('td[data-target=sluzba]').text();
+                var lekar = $(this).closest('tr').children('td[data-target=lekar]').text();
+                req = $.ajax({
+                    url: 'model/termin.php',
+                    type: 'POST',
+                    data: {
+                        name: sluzbaNaziv
+                    },
+                });
+                req.done(function(response, textStatus, jqXHR) {
+                    sluzba = response;
+
+                    console.log(idTerm);
+                    console.log(datum);
+                    console.log(sluzba);
+                    console.log(lekar);
+
+                    $('#idTermina').val(idTerm);
+                    $('#datepicker2').val(datum);
+                    document.getElementById('sluzbaIzmena').value = sluzba;
+                    document.getElementById('lekarIzmena').value = lekar;
+
+
+                });
+            });
+
+            //izmena
+            $('#sacuvajIzmenu').click(function() {
+                request = $.ajax({
+                    url: 'handler/update.php',
+                    type: 'POST',
+                    data: {
+                        idT: $('#idTermina').val(),
+                        datum: $('#datepicker2').val(),
+                        sluzba: $('#sluzbaIzmena').val(),
+                        lekar: $('#lekarIzmena').val()
+                    }
+                });
+
+                request.done(function(response, textStatus, jqXHR) {
+                    alert(response);
+                    if (response == "Uspesno") {
+                        alert("Uspesno ste izmenili termin");
+                        location.reload(true);
+                        console.log('Izmenjen termin');
+                    } else {
+                        console.log("Termin nije izmenjen " + response);
+                        alert("Neuspesna izmena termina");
+                    }
+                });
+
+                request.fail(function(jqXHR, textStatus, errorThrown) {
+                    console.error('Desila se greska: ' + textStatus, errorThrown);
+                });
+            });
+
 
             //dodavanje
             $('#formaDodaj').submit(function() {
