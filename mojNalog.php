@@ -47,132 +47,104 @@ require "connect.php";
 
         </div>
 
+        <div id="iscrtajTabelu"></div>
 
-        <table class="table">
-            <thead class="thead-dark">
-                <tr>
-                    <th scope="col">Datum</th>
-                    <th scope="col">Sluzba</th>
-                    <th scope="col">Lekar</th>
-                    <th scope="col">Opcije</th>
-                </tr>
-            </thead>
-            <tbody id="termini">
-                <?php
-                $termini = $connection->query("SELECT * FROM termin");
-                while ($termin = $termini->fetch_array()) :
-                ?>
-                    <tr>
-                        <td data-target="datum"><?php echo $termin["datum"] ?></td>
-                        <td data-target="sluzba"><?php echo $termin["sluzba"] ?></td>
-                        <td data-target="lekar"><?php echo $termin["lekar"] ?></td>
-                        <td>
-                            <button id="dugmeObrisi" name="dugmeObrisi" class="btn btn-danger" onclick="obrisiTermin(<?php echo $termin["id"] ?>)" data-id1="<?php echo $termin["id"] ?>">Obrisi</button>
-                            <button id="izmena" type="button" class="btn btn-success" data-toggle="modal" data-target="#modal1" data-id2="<?php echo $termin["id"] ?>">Izmeni</button>
-                        </td>
-                    </tr>
-                <?php
-                endwhile;
-                ?>
-            </tbody>
-        </table>
+    </div>
+    <?php include 'footer.php'; ?>
 
 
-        <?php include 'footer.php'; ?>
-
-
-        <!-- Modal izmeni termin -->
-        <div class="modal hide fade" id="modal1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="myModalLabelIzmeni">Izmeni termin</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                    </div>
-                    <form method="post" id="formaIzmeni">
-                        <div class="modal-body">
-                            <div style="display: none;" class="form-group">
-                                <label for="idTermina">IdTermina</label>
-                                <input id="idTermina" type="text" name="idTermina" class="form-control" />
-                            </div>
-                            <div class="form-group">
-                                <label for="datepicker2">Datum</label>
-                                <input type="text" name="datum" class="form-control datepicker" id="datepicker2" placeholder="" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="sluzbaIzmena">Sluzba</label>
-                                <select type="text" name="sluzba" class="form-control sluzba" id="sluzbaIzmena" value='' required>
-                                    <?php
-                                    $sluzbe = $connection->query("SELECT * FROM sluzba");
-                                    while ($sluzba = $sluzbe->fetch_array()) :
-                                        echo '<option value="' . $sluzba['id'] . '" name="' . $sluzba['naziv'] . '">' . $sluzba['naziv'] . '</option>';
-                                    endwhile;
-                                    ?>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="lekarIzmena">Lekar</label>
-                                <select type="text" name="lekar" class="form-control lekar" id="lekarIzmena" value='' required>
-                                    <option value="none" class="dropdown-item disabled">Izaberite sluzbu prvo</option>
-                                </select>
-                            </div>
-                        </div>
-                    </form>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Zatvori</button>
-                        <button id="sacuvajIzmenu" type="submit" id="dugmeIzmeni" name="dugmeIzmeni" class="btn btn-info">Sacuvaj</button>
-                    </div>
+    <!-- Modal izmeni termin -->
+    <div class="modal hide fade" id="modal1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="display: none;">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="myModalLabelIzmeni">Izmeni termin</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
                 </div>
-            </div>
-        </div>
-
-        <!-- Modal dodaj termin -->
-        <div class="modal fade" id="modalDodaj" tabindex="-1" role="dialog" aria-labelledby="ModalLabel" aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="dodajTermin">Dodaj termin</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
+                <form method="post" id="formaIzmeni">
+                    <div class="modal-body">
+                        <div style="display: none;" class="form-group">
+                            <label for="idTermina">IdTermina</label>
+                            <input id="idTermina" type="text" name="idTermina" class="form-control" />
+                        </div>
+                        <div class="form-group">
+                            <label for="datepicker2">Datum</label>
+                            <input type="text" name="datum" class="form-control datepicker" id="datepicker2" placeholder="" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="sluzbaIzmena">Sluzba</label>
+                            <select type="text" name="sluzba" class="form-control sluzba" id="sluzbaIzmena" value='' required>
+                                <?php
+                                $sluzbe = $connection->query("SELECT * FROM sluzba");
+                                while ($sluzba = $sluzbe->fetch_array()) :
+                                    echo '<option value="' . $sluzba['id'] . '" name="' . $sluzba['naziv'] . '">' . $sluzba['naziv'] . '</option>';
+                                endwhile;
+                                ?>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="lekarIzmena">Lekar</label>
+                            <select type="text" name="lekar" class="form-control lekar" id="lekarIzmena" value='' required>
+                                <option value="none" class="dropdown-item disabled">Izaberite sluzbu prvo</option>
+                            </select>
+                        </div>
                     </div>
-
-                    <form method="post" id="formaDodaj">
-                        <div class="modal-body">
-                            <div class="form-group">
-                                <label for="datepicker">Datum</label>
-                                <input type="text" name="datum" class="form-control datepicker" id="datepicker" placeholder="Izaberite datum" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="sluzba">Sluzba</label>
-                                <select type="text" name="sluzba" class="form-control sluzba" id="sluzba" value='' required>
-                                    <?php
-                                    $vratiSluzbe = "SELECT * FROM sluzba";
-                                    $sluzbe = $connection->query($vratiSluzbe);
-                                    while ($sluzba = $sluzbe->fetch_array()) :
-                                        echo '<option value="' . $sluzba['id'] . '">' . $sluzba['naziv'] . '</option>';
-                                    endwhile;
-                                    ?>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="lekar">Lekar</label>
-                                <select type="text" name="lekar" class="form-control lekar" id="lekar" value='' required>
-                                    <option value="none" class="dropdown-item disabled">Izaberite sluzbu prvo</option>
-                                </select>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Zatvori</button>
-                                <button type="submit" id="dugmeDodaj" name="dugmeDodaj" class="btn btn-info">Sacuvaj</button>
-                            </div>
-                    </form>
-
-
-
+                </form>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Zatvori</button>
+                    <button id="sacuvajIzmenu" type="submit" id="dugmeIzmeni" name="dugmeIzmeni" class="btn btn-info">Sacuvaj</button>
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- Modal dodaj termin -->
+    <div class="modal fade" id="modalDodaj" tabindex="-1" role="dialog" aria-labelledby="ModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="dodajTermin">Dodaj termin</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+
+                <form method="post" id="formaDodaj">
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="datepicker">Datum</label>
+                            <input type="text" name="datum" class="form-control datepicker" id="datepicker" placeholder="Izaberite datum" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="sluzba">Sluzba</label>
+                            <select type="text" name="sluzba" class="form-control sluzba" id="sluzba" value='' required>
+                                <?php
+                                $vratiSluzbe = "SELECT * FROM sluzba";
+                                $sluzbe = $connection->query($vratiSluzbe);
+                                while ($sluzba = $sluzbe->fetch_array()) :
+                                    echo '<option value="' . $sluzba['id'] . '">' . $sluzba['naziv'] . '</option>';
+                                endwhile;
+                                ?>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="lekar">Lekar</label>
+                            <select type="text" name="lekar" class="form-control lekar" id="lekar" value='' required>
+                                <option value="none" class="dropdown-item disabled">Izaberite sluzbu prvo</option>
+                            </select>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Zatvori</button>
+                            <button type="submit" id="dugmeDodaj" name="dugmeDodaj" class="btn btn-info">Sacuvaj</button>
+                        </div>
+                </form>
+
+
+
+            </div>
+        </div>
+    </div>
+
 
 
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
@@ -347,6 +319,30 @@ require "connect.php";
             });
 
         };
+    </script>
+
+    <script>
+        $(document).ready(function() {
+            iscrtajTabelu();
+
+            function iscrtajTabelu(query) {
+                $.ajax({
+                    url: 'terminiTabela.php',
+                    method: "post",
+                    data: {
+                        query: query
+                    },
+                    success: function(data) {
+                        $('#iscrtajTabelu').html(data);
+                    }
+                });
+            }
+
+            $('#pretraga').keyup(function() {
+                var search = $(this).val();
+                iscrtajTabelu(search);
+            });
+        });
     </script>
 
 </body>
